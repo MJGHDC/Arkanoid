@@ -13,6 +13,9 @@
     <Filter Include="src\sprite">
       <UniqueIdentifier>{ce6c47ee-312a-46e3-b3c0-6279b345103d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\layer">
+      <UniqueIdentifier>{c39235fb-c591-49be-8743-a1a1a001b867}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -36,6 +39,9 @@
     <ClCompile Include="..\Classes\sprite\Bogie.cpp">
       <Filter>src\sprite</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\layer\PhysicsLayer.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -58,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\sprite\Bogie.h">
       <Filter>src\sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\layer\PhysicsLayer.h">
+      <Filter>src\layer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

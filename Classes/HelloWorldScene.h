@@ -30,9 +30,7 @@
 #endif
 
 #include "cocos2d.h"
-#include "sprite/Bead.h"
-#include "sprite/Bogie.h"
-#include "sprite/Brick.h"
+#include "layer/PhysicsLayer.h"
 //#include "Box2D/Box2D.h"
 //#include <GLES-Render.h>
 
@@ -40,14 +38,6 @@ using namespace cocos2d;
 
 class HelloWorld final : public cocos2d::Scene
 {
-	enum ePhysicsBodyType
-	{
-		circle,
-		box,
-		polygon
-	};
-	static Scene* scene;
-
 public:
     static cocos2d::Scene* createScene();
 
@@ -56,21 +46,10 @@ public:
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
 
-	PhysicsBody* SpriteSetPhysicsBody(Sprite* pSprite, const float scale, const Rect& rect, const ePhysicsBodyType type, const PhysicsMaterial& material = PHYSICSBODY_MATERIAL_DEFAULT, const Vec2& offset = Vec2::ZERO);
-
-	void onEnter() override;
-	void onExit() override;
-	void tick(float deltaTime);
+	//static Scene* s_scene;
 
 private:
 
-	Size mWinSize;
-	Texture2D* mTexture;
-	SpriteFrameCache* spriteFrameCache;
-
-	Bogie* pBogie;
-	Bead* pBead;
-	//Brick* pBrick;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

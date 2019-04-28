@@ -154,6 +154,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\GLES-Render.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
+    <ClCompile Include="..\Classes\layer\PhysicsLayer.cpp" />
     <ClCompile Include="..\Classes\sprite\Bead.cpp" />
     <ClCompile Include="..\Classes\sprite\Bogie.cpp" />
     <ClCompile Include="..\Classes\sprite\Brick.cpp" />
@@ -163,6 +164,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\GLES-Render.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
+    <ClInclude Include="..\Classes\layer\PhysicsLayer.h" />
     <ClInclude Include="..\Classes\sprite\Bead.h" />
     <ClInclude Include="..\Classes\sprite\Bogie.h" />
     <ClInclude Include="..\Classes\sprite\Brick.h" />
