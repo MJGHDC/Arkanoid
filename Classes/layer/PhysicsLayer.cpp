@@ -1,8 +1,5 @@
 #include "layer/PhysicsLayer.h"
 
-#define BOGIE_TAG 1
-#define CIRCLE_TAG 2
-
 PhysicsLayer::PhysicsLayer(const Scene* const scene)
 	: mParentScene(scene)
 {
@@ -69,10 +66,12 @@ bool PhysicsLayer::init()
 
 
 	scale = 0.5f;
-	mpBead = Bead::create(pSprite2, CIRCLE_TAG);
+	mpBead = Bead::create(pSprite2, BEAD_TAG);
 	mpBead->setPosition(Vec2(500, 132));
 	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, rect2, circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pTempPhysicsBody->setGravityEnable(false);
+	pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
+	pTempPhysicsBody->setVelocity(Vec2(200, 400));
 	this->addChild(mpBead);
 
 	// 위 두 친구는 joint로 묶도록 하자.
@@ -108,6 +107,7 @@ bool PhysicsLayer::init()
 				pBrick->setAnchorPoint(Vec2(1, 1));
 				pBrick->setPosition(brickPosition - Size(rect3.getMaxX() * scale * j, rect3.getMaxY() * scale * i));
 				pTempPhysicsBody = SpriteSetPhysicsBody(pBrick, scale, rect3, box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+				pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
 				pTempPhysicsBody->setDynamic(false);
 				this->addChild(pBrick);
 			}
@@ -185,7 +185,7 @@ bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 	for (auto& obj : arr)
 	{
 		log("%d", obj->getBody()->getTag());
-		if ((obj->getBody()->getTag()) == CIRCLE_TAG)
+		if ((obj->getBody()->getTag()) == BEAD_TAG)
 		{
 			body = obj->getBody();
 			break;

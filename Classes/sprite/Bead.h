@@ -1,12 +1,15 @@
 #pragma once
 
-#include "2d\CCSprite.h"
+#include "cocos2d.h"
 
 USING_NS_CC;
+
+#define BEAD_TAG 2
 
 class Bead : public Sprite
 {
 public:
+	static Bead* create(SpriteFrame* pSpriteFrame);
 	static Bead* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);
 
 	Bead() = default;
@@ -19,4 +22,6 @@ public:
 
 private:
 	int32_t mTagNumber;
+
+	EventListener* mListener;
 };

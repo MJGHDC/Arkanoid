@@ -1,8 +1,9 @@
 #pragma once
 
-//#include "2d\CCSprite.h"
 #include "cocos2d.h"
 USING_NS_CC;
+
+#define BOGIE_TAG 1
 
 class Bogie : public Sprite
 {
