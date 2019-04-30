@@ -1,20 +1,25 @@
 #pragma once
 
-#include "2d\CCSprite.h"
-//#include "cocos2d.h"
+//#include "2d\CCSprite.h"
+#include "cocos2d.h"
 USING_NS_CC;
 
 class Bogie : public Sprite
 {
 public:
-	Bogie() = default;
-	~Bogie() = default;
+	static Bogie* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);
 
+	Bogie() = default;
 	Bogie(int32_t tagNumber);
 
-	static Bogie* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);
+	~Bogie() = default;
+
+	void onEnter() override;
+	void onExit() override;
 
 private:
 	int32_t mTagNumber;
+
+	EventListener* mListener;
 };
 

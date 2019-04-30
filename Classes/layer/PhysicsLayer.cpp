@@ -1,5 +1,8 @@
 #include "layer/PhysicsLayer.h"
 
+#define BOGIE_TAG 1
+#define CIRCLE_TAG 2
+
 PhysicsLayer::PhysicsLayer(const Scene* const scene)
 	: mParentScene(scene)
 {
@@ -58,7 +61,7 @@ bool PhysicsLayer::init()
 	PhysicsBody* pTempPhysicsBody = nullptr;
 
 	float scale = 1.0f;
-	mpBogie = Bogie::create(pSprite1, 1);
+	mpBogie = Bogie::create(pSprite1, BOGIE_TAG);
 	mpBogie->setPosition(Vec2(500, 100));
 	pTempPhysicsBody = SpriteSetPhysicsBody(mpBogie, scale, rect1, box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pTempPhysicsBody->setDynamic(false);
@@ -66,7 +69,7 @@ bool PhysicsLayer::init()
 
 
 	scale = 0.5f;
-	mpBead = Bead::create(pSprite2, 2);
+	mpBead = Bead::create(pSprite2, CIRCLE_TAG);
 	mpBead->setPosition(Vec2(500, 132));
 	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, rect2, circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pTempPhysicsBody->setGravityEnable(false);
@@ -93,13 +96,15 @@ bool PhysicsLayer::init()
 
 	scale = 1.0f;
 	Size brickPosition = mWinSize - Size(0, 60);
+	int32_t brickTagCount = 0;
 	for (size_t i = 0; i < widthCount; ++i)
 	{
 		for (size_t j = 0; j < lengthCount; ++j)
 		{
 			if (brickPlacement[i][j] == 1)
 			{
-				auto* pBrick = Brick::create(pSprite3, 4);
+				int32_t tagNumber = 4 + brickTagCount++;
+				auto* pBrick = Brick::create(pSprite3, tagNumber);
 				pBrick->setAnchorPoint(Vec2(1, 1));
 				pBrick->setPosition(brickPosition - Size(rect3.getMaxX() * scale * j, rect3.getMaxY() * scale * i));
 				pTempPhysicsBody = SpriteSetPhysicsBody(pBrick, scale, rect3, box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
@@ -173,8 +178,6 @@ void PhysicsLayer::tick(float deltaTime)
 
 bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 {
-	log("tlqkf");
-
 	auto location = touch->getLocation();
 	auto arr = mParentScene->getPhysicsWorld()->getShapes(location);
 
@@ -182,7 +185,7 @@ bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 	for (auto& obj : arr)
 	{
 		log("%d", obj->getBody()->getTag());
-		if ((obj->getBody()->getTag() & 3) != 0)
+		if ((obj->getBody()->getTag()) == CIRCLE_TAG)
 		{
 			body = obj->getBody();
 			break;
@@ -191,7 +194,6 @@ bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 
 	if (body != nullptr)
 	{
-		log("tlqkftlqkf");
 		Node* mouse = Node::create();
 		mouse->setPhysicsBody(PhysicsBody::create(0, 0));
 		mouse->getPhysicsBody()->setDynamic(false);
@@ -215,7 +217,6 @@ void PhysicsLayer::onTouchMoved(Touch* touch, Event* event)
 	if (it != mMouseJoint.end())
 	{
 		it->second->setPosition(touch->getLocation());
-		log("haha");
 	}
 }
 

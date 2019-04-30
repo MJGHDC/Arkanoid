@@ -1,11 +1,5 @@
 #include "Bead.h"
 
-Bead::Bead(int32_t tagNumber)
-	: mTagNumber(tagNumber)
-{
-	this->setTag(tagNumber);
-}
-
 Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 {
 	Bead* pSprite = new Bead(tagNumber);
@@ -20,4 +14,18 @@ Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 	return nullptr;
 }
 
+Bead::Bead(int32_t tagNumber)
+	: mTagNumber(tagNumber)
+{
+	this->setTag(tagNumber);
+}
 
+void Bead::onEnter()
+{
+	Sprite::onEnter();
+}
+
+void Bead::onExit()
+{
+	Sprite::onExit();
+}

@@ -7,12 +7,15 @@ USING_NS_CC;
 class Bead : public Sprite
 {
 public:
-	Bead() = default;
-	~Bead() = default;
+	static Bead* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);
 
+	Bead() = default;
 	Bead(int32_t tagNumber);
 
-	static Bead* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);
+	~Bead() = default;
+
+	void onEnter() override;
+	void onExit() override;
 
 private:
 	int32_t mTagNumber;
