@@ -36,8 +36,11 @@ bool PhysicsLayer::init()
 	const Vec2 visibleOrigin = Director::getInstance()->getVisibleOrigin();
 	const Vec2 centre = visibleOrigin + visibleSize / 2;
 
+	PhysicsBody* pTempPhysicsBody = nullptr;
+
 	auto* boundary = Node::create();
 	auto* boundaryBody = PhysicsBody::createEdgeBox(visibleSize, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	boundaryBody->setContactTestBitmask(0xFFFFFFFF);
 	boundary->setPhysicsBody(boundaryBody);
 	boundary->setPosition(centre);
 	this->addChild(boundary);
@@ -49,13 +52,15 @@ bool PhysicsLayer::init()
 
 	Rect rect2 = Rect(0, 0, 64, 64);
 	auto* pSprite2 = SpriteFrame::create("hd/ball.png", rect2);
-	mpSpriteFrameCache->addSpriteFrame(pSprite1, "bead");
+	mpSpriteFrameCache->addSpriteFrame(pSprite2, "bead");
 
 	Rect rect3 = Rect(0, 0, 64, 24);
 	auto* pSprite3 = SpriteFrame::create("hd/box.png", rect3);
-	mpSpriteFrameCache->addSpriteFrame(pSprite1, "brick");
+	mpSpriteFrameCache->addSpriteFrame(pSprite3, "brick");
 
-	PhysicsBody* pTempPhysicsBody = nullptr;
+	Rect rect4 = Rect(0, 0, 64, 24);
+	auto* pSprite4 = SpriteFrame::create("hd/Icon.png", rect3);
+	mpSpriteFrameCache->addSpriteFrame(pSprite4, "item");
 
 	float scale = 1.0f;
 	mpBogie = Bogie::create(pSprite1, BOGIE_TAG);
@@ -70,8 +75,10 @@ bool PhysicsLayer::init()
 	mpBead->setPosition(Vec2(500, 132));
 	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, rect2, circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pTempPhysicsBody->setGravityEnable(false);
+	pTempPhysicsBody->setCategoryBitmask(0x02);
+	pTempPhysicsBody->setCollisionBitmask(0x01);
 	pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
-	pTempPhysicsBody->setVelocity(Vec2(200, 400));
+	//pTempPhysicsBody->setVelocity(Vec2(300, 600));
 	this->addChild(mpBead);
 
 	// 위 두 친구는 joint로 묶도록 하자.
@@ -107,6 +114,8 @@ bool PhysicsLayer::init()
 				pBrick->setAnchorPoint(Vec2(1, 1));
 				pBrick->setPosition(brickPosition - Size(rect3.getMaxX() * scale * j, rect3.getMaxY() * scale * i));
 				pTempPhysicsBody = SpriteSetPhysicsBody(pBrick, scale, rect3, box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+				pTempPhysicsBody->setCategoryBitmask(0x02);
+				pTempPhysicsBody->setCollisionBitmask(0x03);
 				pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
 				pTempPhysicsBody->setDynamic(false);
 				this->addChild(pBrick);
@@ -154,7 +163,6 @@ void PhysicsLayer::onEnter()
 {
 	Layer::onEnter();
 
-	log("qwe");
 	mpTouchListener = EventListenerTouchOneByOne::create();
 	mpTouchListener->onTouchBegan = CC_CALLBACK_2(PhysicsLayer::onTouchBegan, this);
 	mpTouchListener->onTouchMoved = CC_CALLBACK_2(PhysicsLayer::onTouchMoved, this);
@@ -205,6 +213,20 @@ bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 		mMouseJoint.insert(std::make_pair(touch->getID(), mouse));
 
 		return true;
+	}
+	else // Bead Collision Test
+	{
+		int32_t collisionBitmask = mpBead->getPhysicsBody()->getCollisionBitmask();
+		if (collisionBitmask == 0x01)
+		{
+			mpBead->getPhysicsBody()->setCollisionBitmask(collisionBitmask << 1);
+		}
+		else
+		{
+			mpBead->getPhysicsBody()->setCollisionBitmask(collisionBitmask >> 1);
+		}
+
+		//this->addChild(pBrick);
 	}
 
 	return false;

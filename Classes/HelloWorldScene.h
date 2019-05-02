@@ -46,8 +46,6 @@ public:
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
 
-	//static Scene* s_scene;
-
 private:
 
 };

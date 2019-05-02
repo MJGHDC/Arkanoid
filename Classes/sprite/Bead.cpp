@@ -1,6 +1,7 @@
 #include "Bead.h"
+#include "layer/PhysicsLayer.h"
 
-Bead * Bead::create(SpriteFrame * pSpriteFrame)
+Bead* Bead::create(SpriteFrame * pSpriteFrame)
 {
 	Bead* pSprite = new Bead(BEAD_TAG);
 	if (pSprite && pSprite->initWithSpriteFrame(pSpriteFrame))
@@ -39,28 +40,34 @@ void Bead::onEnter()
 	Sprite::onEnter();
 
 	auto* contactListener = EventListenerPhysicsContact::create();
-	//contactListener->onContactSeparate
-	contactListener->onContactSeparate = [=](PhysicsContact& contact) {
+	//onContactSeparate
+	contactListener->onContactBegin = [=](PhysicsContact& contact) {
 
-		auto nodeA = contact.getShapeA()->getBody()->getNode();
-		auto nodeB = contact.getShapeB()->getBody()->getNode();
+		auto* bodyA = contact.getShapeA()->getBody();
+		auto* nodeA = bodyA->getNode();
+		auto* nodeB = contact.getShapeB()->getBody()->getNode();
 
-		if (nodeA && nodeB)
+		if (nodeA && nodeB && nodeA->getTag() == BEAD_TAG)
 		{
-			log("nodeA Tag : %d", nodeA->getTag());
-			log("nodeB Tag : %d", nodeB->getTag());
-			if (nodeA->getTag() == BEAD_TAG)
+			if (nodeB->getTag() == -1)
 			{
+				if (nodeA->getPositionY() < 80)
+				{
+					log("The End");
+				}
+			}
+			else 
+			{
+				auto* pBrick = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("bead"));
+				pBrick->setPosition(nodeB->getPosition());
+				log("parent Tag %d", this->getTag());
+				nodeB->getParent()->addChild(pBrick);
 				nodeB->removeFromParentAndCleanup(true);
 			}
-			else if (nodeB->getTag() == BEAD_TAG)
-			{
-				nodeA->removeFromParentAndCleanup(true);
-			}
-		}
+		}		
 
 		return true;
-	}; 
+	};
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 

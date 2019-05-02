@@ -30,7 +30,7 @@ USING_NS_CC;
 Scene* HelloWorld::createScene()
 {
 	//auto scene = Scene::createWithPhysics();
-	auto* scene = Scene::createWithPhysics();
+	auto* scene = HelloWorld::createWithPhysics();
 
 	// set gravity
 	//scene->getPhysicsWorld()->setGravity(Vec2(0.0f, -98.0f)); // 중력 가속도
@@ -41,6 +41,7 @@ Scene* HelloWorld::createScene()
 	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 
 	auto* layer = PhysicsLayer::create(scene);
+	layer->setTag(10000);
 	scene->addChild(layer);
 
 	return scene;

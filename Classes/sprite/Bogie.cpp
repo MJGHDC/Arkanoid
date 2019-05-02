@@ -53,7 +53,6 @@ void Bogie::onEnter()
 		{
 			move.x = 960;
 		}
-		log("x : %f, y : %f", move.x, move.y);
 		this->setPosition(move);
 	};
 

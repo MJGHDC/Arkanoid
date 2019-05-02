@@ -19,4 +19,5 @@ public:
 
 private:
 	int32_t mTagNumber;
+	Sprite* item;
 };

@@ -24,7 +24,7 @@ public:
 
 	//CREATE_FUNC(PhysicsLayer);
 
-	PhysicsBody* SpriteSetPhysicsBody(Sprite* const pSprite, const float scale, const Rect& rect, const ePhysicsBodyType type, const PhysicsMaterial& material = PHYSICSBODY_MATERIAL_DEFAULT, const Vec2& offset = Vec2::ZERO) const;
+	PhysicsBody* SpriteSetPhysicsBody(Sprite* const pSprite, const float scale, const Rect& rect, const ePhysicsBodyType type = box, const PhysicsMaterial& material = PHYSICSBODY_MATERIAL_DEFAULT, const Vec2& offset = Vec2::ZERO) const;
 
 	void onEnter() override;
 	void onExit() override;

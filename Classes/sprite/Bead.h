@@ -6,6 +6,8 @@ USING_NS_CC;
 
 #define BEAD_TAG 2
 
+
+
 class Bead : public Sprite
 {
 public:
