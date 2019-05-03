@@ -24,9 +24,6 @@
     <ClCompile Include="..\Classes\GLES-Render.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -42,6 +39,9 @@
     <ClCompile Include="..\Classes\layer\PhysicsLayer.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\ArkanoidScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -51,9 +51,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\GLES-Render.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\sprite\Bead.h">
@@ -67,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\layer\PhysicsLayer.h">
       <Filter>src\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\ArkanoidScene.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

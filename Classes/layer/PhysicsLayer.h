@@ -34,6 +34,8 @@ public:
 	void onTouchMoved(Touch* touch, Event* event);
 	void onTouchEnded(Touch* touch, Event* event);
 
+	void A();
+
 private:
 	const Scene* const mParentScene;
 

@@ -22,8 +22,10 @@ public:
 	void onEnter() override;
 	void onExit() override;
 
+	bool onContactSeparate(PhysicsContact& contact);
+
 private:
 	int32_t mTagNumber;
 
-	EventListener* mListener;
+	EventListenerPhysicsContact* mpContactListener;
 };

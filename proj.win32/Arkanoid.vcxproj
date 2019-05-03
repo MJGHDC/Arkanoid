@@ -153,7 +153,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\GLES-Render.cpp" />
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
+    <ClCompile Include="..\Classes\ArkanoidScene.cpp" />
     <ClCompile Include="..\Classes\layer\PhysicsLayer.cpp" />
     <ClCompile Include="..\Classes\sprite\Bead.cpp" />
     <ClCompile Include="..\Classes\sprite\Bogie.cpp" />
@@ -163,7 +163,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\GLES-Render.h" />
-    <ClInclude Include="..\Classes\HelloWorldScene.h" />
+    <ClInclude Include="..\Classes\ArkanoidScene.h" />
     <ClInclude Include="..\Classes\layer\PhysicsLayer.h" />
     <ClInclude Include="..\Classes\sprite\Bead.h" />
     <ClInclude Include="..\Classes\sprite\Bogie.h" />

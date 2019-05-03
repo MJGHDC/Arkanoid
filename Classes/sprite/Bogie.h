@@ -18,9 +18,12 @@ public:
 	void onEnter() override;
 	void onExit() override;
 
+	bool onTouchBegan(Touch* touch, Event* event);
+	void onTouchMoved(Touch* touch, Event* event);
+
 private:
 	int32_t mTagNumber;
 
-	EventListener* mListener;
+	EventListenerTouchOneByOne* mpTouchListener;
 };
 

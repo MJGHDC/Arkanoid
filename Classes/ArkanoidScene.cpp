@@ -22,15 +22,20 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "HelloWorldScene.h"
+#include "ArkanoidScene.h"
 #include "SimpleAudioEngine.h"
+#include "layer/PhysicsLayer.h"
 
 USING_NS_CC;
 
-Scene* HelloWorld::createScene()
+ArkanoidScene* ArkanoidScene::createScene()
 {
-	//auto scene = Scene::createWithPhysics();
-	auto* scene = HelloWorld::createWithPhysics();
+	auto* scene = ArkanoidScene::createWithPhysics();
+	if (false == scene->init())
+	{
+		assert(false, "리소스 로딩 실패");
+		return nullptr;
+	}
 
 	// set gravity
 	//scene->getPhysicsWorld()->setGravity(Vec2(0.0f, -98.0f)); // 중력 가속도
@@ -48,14 +53,38 @@ Scene* HelloWorld::createScene()
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool ArkanoidScene::init()
 {
-	//////////////////////////////
-	// 1. super init first
-	if (!Scene::init())
-	{
-		return false;
-	}
+	auto* pSpriteFrameCache = SpriteFrameCache::getInstance();
+
+	// 게임에 사용되는 sprite frame 생성
+	Rect rect1 = Rect(0, 0, 128, 32);
+	auto* pSprite1 = SpriteFrame::create("hd/bogie.png", rect1);
+	pSpriteFrameCache->addSpriteFrame(pSprite1, "bogie");
+
+	Rect rect2 = Rect(0, 0, 64, 64);
+	auto* pSprite2 = SpriteFrame::create("hd/ball.png", rect2);
+	pSpriteFrameCache->addSpriteFrame(pSprite2, "bead");
+
+	Rect rect3 = Rect(0, 0, 64, 24);
+	auto* pSprite3 = SpriteFrame::create("hd/box.png", rect3);
+	pSpriteFrameCache->addSpriteFrame(pSprite3, "brick");
+
+	Rect rect4 = Rect(0, 0, 64, 24);
+	auto* pSprite4 = SpriteFrame::create("hd/Icon.png", rect4);
+	pSpriteFrameCache->addSpriteFrame(pSprite4, "item");
 	
+	// 테두리 생성
+	const Size visibleSize = Director::getInstance()->getVisibleSize();
+	const Vec2 visibleOrigin = Director::getInstance()->getVisibleOrigin();
+	const Vec2 centre = visibleOrigin + visibleSize / 2;
+
+	auto* boundary = Node::create();
+	auto* boundaryBody = PhysicsBody::createEdgeBox(visibleSize, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	boundaryBody->setContactTestBitmask(0xFFFFFFFF);
+	boundary->setPhysicsBody(boundaryBody);
+	boundary->setPosition(centre);
+	this->addChild(boundary);
+
 	return true;
 }

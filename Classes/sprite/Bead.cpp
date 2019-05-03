@@ -1,5 +1,4 @@
 #include "Bead.h"
-#include "layer/PhysicsLayer.h"
 
 Bead* Bead::create(SpriteFrame * pSpriteFrame)
 {
@@ -39,43 +38,44 @@ void Bead::onEnter()
 {
 	Sprite::onEnter();
 
-	auto* contactListener = EventListenerPhysicsContact::create();
 	//onContactSeparate
-	contactListener->onContactBegin = [=](PhysicsContact& contact) {
+	mpContactListener = EventListenerPhysicsContact::create();
+	mpContactListener->onContactSeparate = CC_CALLBACK_1(Bead::onContactSeparate, this);
 
-		auto* bodyA = contact.getShapeA()->getBody();
-		auto* nodeA = bodyA->getNode();
-		auto* nodeB = contact.getShapeB()->getBody()->getNode();
-
-		if (nodeA && nodeB && nodeA->getTag() == BEAD_TAG)
-		{
-			if (nodeB->getTag() == -1)
-			{
-				if (nodeA->getPositionY() < 80)
-				{
-					log("The End");
-				}
-			}
-			else 
-			{
-				auto* pBrick = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("bead"));
-				pBrick->setPosition(nodeB->getPosition());
-				log("parent Tag %d", this->getTag());
-				nodeB->getParent()->addChild(pBrick);
-				nodeB->removeFromParentAndCleanup(true);
-			}
-		}		
-
-		return true;
-	};
-
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
-
-	mListener = contactListener;
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(mpContactListener, this);
 }
 
 void Bead::onExit()
 {
-	_eventDispatcher->removeEventListener(mListener);
+	_eventDispatcher->removeEventListener(mpContactListener);
+
 	Sprite::onExit();
+}
+
+bool Bead::onContactSeparate(PhysicsContact & contact)
+{
+	auto* bodyA = contact.getShapeA()->getBody();
+	auto* nodeA = bodyA->getNode();
+	auto* nodeB = contact.getShapeB()->getBody()->getNode();
+
+	if (nodeA && nodeB && nodeA->getTag() == BEAD_TAG)
+	{
+		if (nodeB->getTag() == -1)
+		{
+			if (nodeA->getPositionY() < 80)
+			{
+				log("The End");
+			}
+		}
+		else
+		{
+			if (nodeB->getTag() > BEAD_TAG)
+			{
+				nodeB->removeFromParentAndCleanup(true);
+			}
+
+		}
+	}
+
+	return true;
 }

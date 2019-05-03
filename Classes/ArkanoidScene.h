@@ -30,21 +30,35 @@
 #endif
 
 #include "cocos2d.h"
-#include "layer/PhysicsLayer.h"
 //#include "Box2D/Box2D.h"
 //#include <GLES-Render.h>
 
-using namespace cocos2d;
+USING_NS_CC;
 
-class HelloWorld final : public cocos2d::Scene
+class ArkanoidScene final : public Scene
 {
 public:
-    static cocos2d::Scene* createScene();
+    static ArkanoidScene* createScene();
 
     virtual bool init() override;
     
     // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(ArkanoidScene);
+
+	static ArkanoidScene* createWithPhysics()
+	{
+		ArkanoidScene* ret = new (std::nothrow) ArkanoidScene();
+		if (ret && ret->initWithPhysics())
+		{
+			ret->autorelease();
+			return ret;
+		}
+		else
+		{
+			CC_SAFE_DELETE(ret);
+			return nullptr;
+		}
+	}
 
 private:
 

@@ -29,51 +29,23 @@ bool PhysicsLayer::init()
 	}
 
 	mWinSize = Director::getInstance()->getWinSize();
-	mpTexture = Director::getInstance()->getTextureCache()->addImage("blocks.png");
+	mpTexture = Director::getInstance()->getTextureCache()->addImage("blocks.png"); // юс╫ц
 	mpSpriteFrameCache = SpriteFrameCache::getInstance();
-
-	const Size visibleSize = Director::getInstance()->getVisibleSize();
-	const Vec2 visibleOrigin = Director::getInstance()->getVisibleOrigin();
-	const Vec2 centre = visibleOrigin + visibleSize / 2;
-
+	
 	PhysicsBody* pTempPhysicsBody = nullptr;
 
-	auto* boundary = Node::create();
-	auto* boundaryBody = PhysicsBody::createEdgeBox(visibleSize, PhysicsMaterial(0.1f, 1.0f, 0.0f));
-	boundaryBody->setContactTestBitmask(0xFFFFFFFF);
-	boundary->setPhysicsBody(boundaryBody);
-	boundary->setPosition(centre);
-	this->addChild(boundary);
-
-
-	Rect rect1 = Rect(0, 0, 128, 32);
-	auto* pSprite1 = SpriteFrame::create("hd/bogie.png", rect1);
-	mpSpriteFrameCache->addSpriteFrame(pSprite1, "bogie");
-
-	Rect rect2 = Rect(0, 0, 64, 64);
-	auto* pSprite2 = SpriteFrame::create("hd/ball.png", rect2);
-	mpSpriteFrameCache->addSpriteFrame(pSprite2, "bead");
-
-	Rect rect3 = Rect(0, 0, 64, 24);
-	auto* pSprite3 = SpriteFrame::create("hd/box.png", rect3);
-	mpSpriteFrameCache->addSpriteFrame(pSprite3, "brick");
-
-	Rect rect4 = Rect(0, 0, 64, 24);
-	auto* pSprite4 = SpriteFrame::create("hd/Icon.png", rect3);
-	mpSpriteFrameCache->addSpriteFrame(pSprite4, "item");
-
 	float scale = 1.0f;
-	mpBogie = Bogie::create(pSprite1, BOGIE_TAG);
+	mpBogie = Bogie::create(mpSpriteFrameCache->getSpriteFrameByName("bogie"), BOGIE_TAG);
 	mpBogie->setPosition(Vec2(500, 100));
-	pTempPhysicsBody = SpriteSetPhysicsBody(mpBogie, scale, rect1, box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	pTempPhysicsBody = SpriteSetPhysicsBody(mpBogie, scale, mpBogie->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pTempPhysicsBody->setDynamic(false);
 	this->addChild(mpBogie);
 
 
 	scale = 0.5f;
-	mpBead = Bead::create(pSprite2, BEAD_TAG);
+	mpBead = Bead::create(mpSpriteFrameCache->getSpriteFrameByName("bead"), BEAD_TAG);
 	mpBead->setPosition(Vec2(500, 132));
-	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, rect2, circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, mpBead->getTextureRect(), circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pTempPhysicsBody->setGravityEnable(false);
 	pTempPhysicsBody->setCategoryBitmask(0x02);
 	pTempPhysicsBody->setCollisionBitmask(0x01);
@@ -110,10 +82,12 @@ bool PhysicsLayer::init()
 			if (brickPlacement[i][j] == 1)
 			{
 				int32_t tagNumber = 4 + brickTagCount++;
-				auto* pBrick = Brick::create(pSprite3, tagNumber);
+				auto* pBrick = Brick::create(mpSpriteFrameCache->getSpriteFrameByName("brick"), tagNumber);
+				Rect rect = pBrick->getTextureRect();
 				pBrick->setAnchorPoint(Vec2(1, 1));
-				pBrick->setPosition(brickPosition - Size(rect3.getMaxX() * scale * j, rect3.getMaxY() * scale * i));
-				pTempPhysicsBody = SpriteSetPhysicsBody(pBrick, scale, rect3, box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+				pBrick->setPosition(brickPosition - Size(rect.getMaxX() * scale * j, rect.getMaxY() * scale * i));
+
+				pTempPhysicsBody = SpriteSetPhysicsBody(pBrick, scale, pBrick->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 				pTempPhysicsBody->setCategoryBitmask(0x02);
 				pTempPhysicsBody->setCollisionBitmask(0x03);
 				pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
@@ -124,7 +98,7 @@ bool PhysicsLayer::init()
 	}
 
 
-	schedule(schedule_selector(PhysicsLayer::tick));
+	schedule(schedule_selector(PhysicsLayer::tick));// , 1.0f);
 
 	log("width : %f, height : %f", mWinSize.width, mWinSize.height);
 	//log("%d, %d, %d", pBogie->getTag(), pBead->getTag(), pBrick->getTag());
@@ -164,6 +138,7 @@ void PhysicsLayer::onEnter()
 	Layer::onEnter();
 
 	mpTouchListener = EventListenerTouchOneByOne::create();
+	mpTouchListener->setSwallowTouches(true);
 	mpTouchListener->onTouchBegan = CC_CALLBACK_2(PhysicsLayer::onTouchBegan, this);
 	mpTouchListener->onTouchMoved = CC_CALLBACK_2(PhysicsLayer::onTouchMoved, this);
 	mpTouchListener->onTouchEnded = CC_CALLBACK_2(PhysicsLayer::onTouchEnded, this);
@@ -182,20 +157,22 @@ void PhysicsLayer::onExit()
 
 void PhysicsLayer::tick(float deltaTime)
 {
+	//log("haha");
+	//A();
 }
 
 bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 {
 	auto location = touch->getLocation();
-	auto arr = mParentScene->getPhysicsWorld()->getShapes(location);
+	auto physicsShapeArray = mParentScene->getPhysicsWorld()->getShapes(location);
 
 	PhysicsBody* body = nullptr;
-	for (auto& obj : arr)
+	for (auto& shape : physicsShapeArray)
 	{
-		log("%d", obj->getBody()->getTag());
-		if ((obj->getBody()->getTag()) == BEAD_TAG)
+		log("%d", shape->getBody()->getTag());
+		if ((shape->getBody()->getTag()) == BEAD_TAG)
 		{
-			body = obj->getBody();
+			body = shape->getBody();
 			break;
 		}
 	}
@@ -207,6 +184,7 @@ bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 		mouse->getPhysicsBody()->setDynamic(false);
 		mouse->setPosition(location);
 		this->addChild(mouse);
+
 		PhysicsJointPin* joint = PhysicsJointPin::construct(mouse->getPhysicsBody(), body, location);
 		joint->setMaxForce(5000.0f * body->getMass());
 		mParentScene->getPhysicsWorld()->addJoint(joint);
@@ -225,8 +203,6 @@ bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 		{
 			mpBead->getPhysicsBody()->setCollisionBitmask(collisionBitmask >> 1);
 		}
-
-		//this->addChild(pBrick);
 	}
 
 	return false;
@@ -251,4 +227,24 @@ void PhysicsLayer::onTouchEnded(Touch* touch, Event* event)
 		this->removeChild(it->second);
 		mMouseJoint.erase(it);
 	}
+}
+
+void PhysicsLayer::A()
+{
+
+	Vec2 vec = Vec2(200, 300);
+	//auto* pItem = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("bead"));
+	Rect rect4 = Rect(0, 0, 64, 24);
+	auto* pItem = Sprite::create("hd/Icon.png", rect4);
+	pItem->setTag(1);
+	pItem->setPosition(vec);
+
+	PhysicsBody* pPhysicsBody = nullptr;
+
+	pPhysicsBody = PhysicsBody::createBox(pItem->getContentSize(), PhysicsMaterial(0.1f, 1.0f, 0.0f));
+
+	pPhysicsBody->setTag(pItem->getTag());
+	pItem->setPhysicsBody(pPhysicsBody);
+
+	this->addChild(pItem);
 }
