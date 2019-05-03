@@ -5,6 +5,7 @@ Bogie* Bogie::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 	Bogie* pSprite = new Bogie(tagNumber);
 	if (pSprite && pSprite->initWithSpriteFrame(pSpriteFrame))
 	{
+		pSprite->setName("Bogie");
 		pSprite->autorelease();
 
 		return pSprite;

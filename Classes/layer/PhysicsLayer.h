@@ -1,11 +1,12 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "sprite/Bead.h"
-#include "sprite/Bogie.h"
-#include "sprite/Brick.h"
 
 USING_NS_CC;
+
+class Bogie;
+class Bead;
+class Brick;
 
 class PhysicsLayer : public Layer
 {
@@ -45,7 +46,8 @@ private:
 
 	Bogie* mpBogie;
 	Bead* mpBead;
-	//Brick* pBrick;
+	Vector<Brick*> mBricks;
+	int32_t mDestroyedBrickCount;
 
 	EventListenerTouchOneByOne* mpTouchListener;
 	EventListenerKeyboard* mpKeyboardListener;

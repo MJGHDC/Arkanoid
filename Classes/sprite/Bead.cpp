@@ -1,4 +1,6 @@
 #include "Bead.h"
+#include "Brick.h"
+#include "sprite/properties/SpriteStatus.h"
 
 Bead* Bead::create(SpriteFrame * pSpriteFrame)
 {
@@ -30,6 +32,9 @@ Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 
 Bead::Bead(int32_t tagNumber)
 	: mTagNumber(tagNumber)
+	, mDestroyedBrickCount(0)
+	, mbBrickCheckList{false}
+	, mStatus(eBeadStatus::default)
 {
 	this->setTag(tagNumber);
 }
@@ -71,6 +76,8 @@ bool Bead::onContactSeparate(PhysicsContact & contact)
 		{
 			if (nodeB->getTag() > BEAD_TAG)
 			{
+				mbBrickCheckList[nodeB->getTag() - 4] = true;
+
 				nodeB->removeFromParentAndCleanup(true);
 			}
 
@@ -78,4 +85,33 @@ bool Bead::onContactSeparate(PhysicsContact & contact)
 	}
 
 	return true;
+}
+
+void Bead::Processing(Vector<Brick*> bricks)
+{
+	for (int32_t i = 0; i < 114; ++i)
+	{
+		if (mbBrickCheckList[i] == true)
+		{
+			mbBrickCheckList[i] = false;
+			auto* pBrick = bricks.at(i);
+			log("destroyBrickTag : %d", pBrick->getTag());
+			mDestroyedBrickCount++;
+		}
+	}
+
+	if (mDestroyedBrickCount == 114)
+	{
+		log("game clear");
+	}
+
+	//if (mDestroyedBrickTag != 0)
+	//{
+	//	auto* pBrick = bricks.at(mDestroyedBrickTag - 4);
+	//	log("destroyBrickTag : %d", pBrick->getTag());
+	//	log("destroyBrickPosition : x = %f , y = %f", pBrick->getPosition().x, pBrick->getPosition().y);
+	//	mDestroyedBrickTag = 0;
+	//	//mDestroyedBrickCount++;
+	//	//log("%d", mDestroyedBrickCount);
+	//}
 }

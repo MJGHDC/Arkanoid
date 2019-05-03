@@ -16,6 +16,9 @@
     <Filter Include="src\layer">
       <UniqueIdentifier>{c39235fb-c591-49be-8743-a1a1a001b867}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\sprite\properties">
+      <UniqueIdentifier>{19cea9b1-60bc-4819-a18c-42c957cd68bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -67,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\ArkanoidScene.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\sprite\properties\SpriteStatus.h">
+      <Filter>src\sprite\properties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

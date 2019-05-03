@@ -6,7 +6,8 @@ USING_NS_CC;
 
 #define BEAD_TAG 2
 
-
+enum class eBeadStatus;
+class Brick;
 
 class Bead : public Sprite
 {
@@ -24,8 +25,13 @@ public:
 
 	bool onContactSeparate(PhysicsContact& contact);
 
+	void Processing(Vector<Brick*> bricks);
+
 private:
 	int32_t mTagNumber;
+	int32_t mDestroyedBrickCount;
+	bool mbBrickCheckList[128];
+	eBeadStatus mStatus;
 
 	EventListenerPhysicsContact* mpContactListener;
 };

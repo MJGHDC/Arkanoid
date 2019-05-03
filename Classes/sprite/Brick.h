@@ -4,6 +4,8 @@
 
 USING_NS_CC;
 
+#define BRICK_TAG 4
+
 class Brick : public Sprite
 {
 public:

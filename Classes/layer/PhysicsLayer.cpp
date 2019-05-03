@@ -1,7 +1,11 @@
 #include "layer/PhysicsLayer.h"
+#include "sprite/Bead.h"
+#include "sprite/Bogie.h"
+#include "sprite/Brick.h"
 
 PhysicsLayer::PhysicsLayer(const Scene* const scene)
 	: mParentScene(scene)
+	, mDestroyedBrickCount(0)
 {
 }
 
@@ -40,6 +44,7 @@ bool PhysicsLayer::init()
 	pTempPhysicsBody = SpriteSetPhysicsBody(mpBogie, scale, mpBogie->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pTempPhysicsBody->setDynamic(false);
 	this->addChild(mpBogie);
+	log("haha : %s", mpBogie->getName().c_str());
 
 
 	scale = 0.5f;
@@ -70,18 +75,18 @@ bool PhysicsLayer::init()
 	constexpr int8_t lengthCount = sizeof(brickPlacement) / widthCount;
 	static_assert(widthCount == 8, "세로 벽돌은 8개이여야 함");
 	static_assert(lengthCount == 16, "가로 벽돌은 16개이여야 함");
-
-
+	
 	scale = 1.0f;
 	Size brickPosition = mWinSize - Size(0, 60);
 	int32_t brickTagCount = 0;
+	mBricks.reserve(widthCount * lengthCount);
 	for (size_t i = 0; i < widthCount; ++i)
 	{
 		for (size_t j = 0; j < lengthCount; ++j)
 		{
 			if (brickPlacement[i][j] == 1)
 			{
-				int32_t tagNumber = 4 + brickTagCount++;
+				int32_t tagNumber = BRICK_TAG + brickTagCount++;
 				auto* pBrick = Brick::create(mpSpriteFrameCache->getSpriteFrameByName("brick"), tagNumber);
 				Rect rect = pBrick->getTextureRect();
 				pBrick->setAnchorPoint(Vec2(1, 1));
@@ -92,13 +97,13 @@ bool PhysicsLayer::init()
 				pTempPhysicsBody->setCollisionBitmask(0x03);
 				pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
 				pTempPhysicsBody->setDynamic(false);
+				mBricks.pushBack(pBrick);
 				this->addChild(pBrick);
 			}
 		}
 	}
 
-
-	schedule(schedule_selector(PhysicsLayer::tick));// , 1.0f);
+	schedule(schedule_selector(PhysicsLayer::tick), 0.1f);// , 1.0f);
 
 	log("width : %f, height : %f", mWinSize.width, mWinSize.height);
 	//log("%d, %d, %d", pBogie->getTag(), pBead->getTag(), pBrick->getTag());
@@ -157,8 +162,14 @@ void PhysicsLayer::onExit()
 
 void PhysicsLayer::tick(float deltaTime)
 {
-	//log("haha");
-	//A();
+	//log("%f", deltaTime);
+	//auto begin = std::chrono::high_resolution_clock::now();
+
+	mpBead->Processing(mBricks);
+
+	//auto end = std::chrono::high_resolution_clock::now();
+	//auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() / 1000.0;
+	//log("std::vector : %f ms", elapsed);
 }
 
 bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
@@ -231,7 +242,6 @@ void PhysicsLayer::onTouchEnded(Touch* touch, Event* event)
 
 void PhysicsLayer::A()
 {
-
 	Vec2 vec = Vec2(200, 300);
 	//auto* pItem = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("bead"));
 	Rect rect4 = Rect(0, 0, 64, 24);

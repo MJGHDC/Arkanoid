@@ -53,11 +53,9 @@ public:
 			ret->autorelease();
 			return ret;
 		}
-		else
-		{
-			CC_SAFE_DELETE(ret);
-			return nullptr;
-		}
+		CC_SAFE_DELETE(ret);
+
+		return nullptr;
 	}
 
 private:
