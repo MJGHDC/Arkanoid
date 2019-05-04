@@ -4,7 +4,7 @@
 
 Bead* Bead::create(SpriteFrame * pSpriteFrame)
 {
-	Bead* pSprite = new Bead(BEAD_TAG);
+	Bead* pSprite = new Bead(BEAD_TAG, 128);
 	if (pSprite && pSprite->initWithSpriteFrame(pSpriteFrame))
 	{
 		pSprite->autorelease();
@@ -16,9 +16,9 @@ Bead* Bead::create(SpriteFrame * pSpriteFrame)
 	return nullptr;
 }
 
-Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
+Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber, int32_t stageBrickCount)
 {
-	Bead* pSprite = new Bead(tagNumber);
+	Bead* pSprite = new Bead(tagNumber, stageBrickCount);
 	if (pSprite && pSprite->initWithSpriteFrame(pSpriteFrame))
 	{
 		pSprite->autorelease();
@@ -30,9 +30,10 @@ Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 	return nullptr;
 }
 
-Bead::Bead(int32_t tagNumber)
+Bead::Bead(int32_t tagNumber, int32_t stageBrickCount)
 	: mTagNumber(tagNumber)
 	, mDestroyedBrickCount(0)
+	, mStageBrickCount(stageBrickCount)
 	, mbBrickCheckList{false}
 	, mStatus(eBeadStatus::default)
 {
@@ -59,8 +60,7 @@ void Bead::onExit()
 
 bool Bead::onContactSeparate(PhysicsContact & contact)
 {
-	auto* bodyA = contact.getShapeA()->getBody();
-	auto* nodeA = bodyA->getNode();
+	auto* nodeA = contact.getShapeA()->getBody()->getNode();
 	auto* nodeB = contact.getShapeB()->getBody()->getNode();
 
 	if (nodeA && nodeB && nodeA->getTag() == BEAD_TAG)
@@ -74,22 +74,21 @@ bool Bead::onContactSeparate(PhysicsContact & contact)
 		}
 		else
 		{
-			if (nodeB->getTag() > BEAD_TAG)
+			if (nodeB->getTag() >= BRICK_TAG)
 			{
-				mbBrickCheckList[nodeB->getTag() - 4] = true;
+				mbBrickCheckList[nodeB->getTag() - BRICK_TAG] = true;
 
 				nodeB->removeFromParentAndCleanup(true);
 			}
-
 		}
 	}
 
 	return true;
 }
 
-void Bead::Processing(Vector<Brick*> bricks)
+Sprite* Bead::Processing(Vector<Brick*> bricks)
 {
-	for (int32_t i = 0; i < 114; ++i)
+	for (int32_t i = 0; i < mStageBrickCount; ++i)
 	{
 		if (mbBrickCheckList[i] == true)
 		{
@@ -97,21 +96,15 @@ void Bead::Processing(Vector<Brick*> bricks)
 			auto* pBrick = bricks.at(i);
 			log("destroyBrickTag : %d", pBrick->getTag());
 			mDestroyedBrickCount++;
+			
+			if (mDestroyedBrickCount == mStageBrickCount)
+			{
+				log("game clear");
+			}
+
+			return pBrick->GetItem();
 		}
 	}
 
-	if (mDestroyedBrickCount == 114)
-	{
-		log("game clear");
-	}
-
-	//if (mDestroyedBrickTag != 0)
-	//{
-	//	auto* pBrick = bricks.at(mDestroyedBrickTag - 4);
-	//	log("destroyBrickTag : %d", pBrick->getTag());
-	//	log("destroyBrickPosition : x = %f , y = %f", pBrick->getPosition().x, pBrick->getPosition().y);
-	//	mDestroyedBrickTag = 0;
-	//	//mDestroyedBrickCount++;
-	//	//log("%d", mDestroyedBrickCount);
-	//}
+	return nullptr;
 }

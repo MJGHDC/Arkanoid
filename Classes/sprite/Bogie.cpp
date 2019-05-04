@@ -1,4 +1,5 @@
 #include "Bogie.h"
+#include "Brick.h"
 
 Bogie* Bogie::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 {
@@ -30,7 +31,11 @@ void Bogie::onEnter()
 	mpTouchListener->onTouchBegan = CC_CALLBACK_2(Bogie::onTouchBegan, this);
 	mpTouchListener->onTouchMoved = CC_CALLBACK_2(Bogie::onTouchMoved, this);
 	
+	mpContactListener = EventListenerPhysicsContact::create();
+	mpContactListener->onContactBegin = CC_CALLBACK_1(Bogie::onContactSeparate, this);
+
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(mpTouchListener, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(mpContactListener, this);
 	//_eventDispatcher->addEventListenerWithFixedPriority(listener, _fixedPriority);
 
 }
@@ -38,8 +43,38 @@ void Bogie::onEnter()
 void Bogie::onExit()
 {
 	_eventDispatcher->removeEventListener(mpTouchListener);
+	_eventDispatcher->removeEventListener(mpContactListener);
 
 	Sprite::onExit();
+}
+
+bool Bogie::onContactSeparate(PhysicsContact & contact)
+{
+	auto* nodeA = contact.getShapeA()->getBody()->getNode();
+	auto* nodeB = contact.getShapeB()->getBody()->getNode(); 
+
+	log("%d, %d", nodeA->getTag(), nodeB->getTag());
+	if (nodeA && nodeB)
+	{
+		if (nodeA->getTag() == ITEM_TAG && nodeB->getTag() == BOGIE_TAG)
+		{
+			nodeA->removeFromParentAndCleanup(true);
+		}
+		else if (nodeA->getTag() == BOGIE_TAG && nodeB->getTag() == ITEM_TAG)
+		{
+			nodeB->removeFromParentAndCleanup(true);
+		}
+		else if (nodeA->getTag() == -1 && nodeB->getTag() == ITEM_TAG)
+		{
+			log("%f", nodeB->getPositionY());
+			if (nodeB->getPositionY() < 120)
+			{
+				nodeB->removeFromParentAndCleanup(true);
+			}
+		}
+	}
+
+	return true;
 }
 
 bool Bogie::onTouchBegan(Touch * touch, Event * event)

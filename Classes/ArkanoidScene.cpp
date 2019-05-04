@@ -70,7 +70,7 @@ bool ArkanoidScene::init()
 	auto* pSprite3 = SpriteFrame::create("hd/box.png", rect3);
 	pSpriteFrameCache->addSpriteFrame(pSprite3, "brick");
 
-	Rect rect4 = Rect(0, 0, 64, 24);
+	Rect rect4 = Rect(0, 0, 114, 114);
 	auto* pSprite4 = SpriteFrame::create("hd/Icon.png", rect4);
 	pSpriteFrameCache->addSpriteFrame(pSprite4, "item");
 	

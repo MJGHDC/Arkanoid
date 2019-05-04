@@ -18,6 +18,7 @@ public:
 	void onEnter() override;
 	void onExit() override;
 
+	bool onContactSeparate(PhysicsContact& contact);
 	bool onTouchBegan(Touch* touch, Event* event);
 	void onTouchMoved(Touch* touch, Event* event);
 
@@ -25,5 +26,6 @@ private:
 	int32_t mTagNumber;
 
 	EventListenerTouchOneByOne* mpTouchListener;
+	EventListenerPhysicsContact* mpContactListener;
 };
 

@@ -6,3 +6,16 @@ enum class eBeadStatus
 	power,
 	die
 };
+
+enum class eBrickStatus
+{
+	construct,
+	destroy
+};
+
+enum class eItem
+{
+	none,
+	powerBall,
+	multiBall
+};

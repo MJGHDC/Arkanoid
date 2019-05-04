@@ -13,10 +13,10 @@ class Bead : public Sprite
 {
 public:
 	static Bead* create(SpriteFrame* pSpriteFrame);
-	static Bead* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);
+	static Bead* create(SpriteFrame* pSpriteFrame, int32_t tagNumber, int32_t stageBrickCount);
 
 	Bead() = default;
-	Bead(int32_t tagNumber);
+	Bead(int32_t tagNumber, int32_t stageBrickCount);
 
 	~Bead() = default;
 
@@ -25,12 +25,18 @@ public:
 
 	bool onContactSeparate(PhysicsContact& contact);
 
-	void Processing(Vector<Brick*> bricks);
+	Sprite* Processing(Vector<Brick*> bricks);
 
 private:
+	enum
+	{
+		maxBrickCount = 128
+	};
+
 	int32_t mTagNumber;
 	int32_t mDestroyedBrickCount;
-	bool mbBrickCheckList[128];
+	int32_t mStageBrickCount;
+	bool mbBrickCheckList[maxBrickCount];
 	eBeadStatus mStatus;
 
 	EventListenerPhysicsContact* mpContactListener;

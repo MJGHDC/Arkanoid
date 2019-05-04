@@ -2,6 +2,7 @@
 #include "sprite/Bead.h"
 #include "sprite/Bogie.h"
 #include "sprite/Brick.h"
+#include "sprite/properties/SpriteStatus.h"
 
 PhysicsLayer::PhysicsLayer(const Scene* const scene)
 	: mParentScene(scene)
@@ -35,31 +36,7 @@ bool PhysicsLayer::init()
 	mWinSize = Director::getInstance()->getWinSize();
 	mpTexture = Director::getInstance()->getTextureCache()->addImage("blocks.png"); // 임시
 	mpSpriteFrameCache = SpriteFrameCache::getInstance();
-	
-	PhysicsBody* pTempPhysicsBody = nullptr;
-
-	float scale = 1.0f;
-	mpBogie = Bogie::create(mpSpriteFrameCache->getSpriteFrameByName("bogie"), BOGIE_TAG);
-	mpBogie->setPosition(Vec2(500, 100));
-	pTempPhysicsBody = SpriteSetPhysicsBody(mpBogie, scale, mpBogie->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
-	pTempPhysicsBody->setDynamic(false);
-	this->addChild(mpBogie);
-	log("haha : %s", mpBogie->getName().c_str());
-
-
-	scale = 0.5f;
-	mpBead = Bead::create(mpSpriteFrameCache->getSpriteFrameByName("bead"), BEAD_TAG);
-	mpBead->setPosition(Vec2(500, 132));
-	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, mpBead->getTextureRect(), circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
-	pTempPhysicsBody->setGravityEnable(false);
-	pTempPhysicsBody->setCategoryBitmask(0x02);
-	pTempPhysicsBody->setCollisionBitmask(0x01);
-	pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
-	//pTempPhysicsBody->setVelocity(Vec2(300, 600));
-	this->addChild(mpBead);
-
-	// 위 두 친구는 joint로 묶도록 하자.
-
+		
 	int8_t brickPlacement[8][16] = {
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -75,8 +52,10 @@ bool PhysicsLayer::init()
 	constexpr int8_t lengthCount = sizeof(brickPlacement) / widthCount;
 	static_assert(widthCount == 8, "세로 벽돌은 8개이여야 함");
 	static_assert(lengthCount == 16, "가로 벽돌은 16개이여야 함");
-	
-	scale = 1.0f;
+
+	PhysicsBody* pTempPhysicsBody = nullptr;
+
+	float scale = 1.0f;
 	Size brickPosition = mWinSize - Size(0, 60);
 	int32_t brickTagCount = 0;
 	mBricks.reserve(widthCount * lengthCount);
@@ -86,12 +65,12 @@ bool PhysicsLayer::init()
 		{
 			if (brickPlacement[i][j] == 1)
 			{
+				eItem itemArr[2] = { eItem::none, eItem::powerBall };
 				int32_t tagNumber = BRICK_TAG + brickTagCount++;
-				auto* pBrick = Brick::create(mpSpriteFrameCache->getSpriteFrameByName("brick"), tagNumber);
+				auto* pBrick = Brick::create(mpSpriteFrameCache->getSpriteFrameByName("brick"), tagNumber, itemArr[random() % 2]);
 				Rect rect = pBrick->getTextureRect();
 				pBrick->setAnchorPoint(Vec2(1, 1));
 				pBrick->setPosition(brickPosition - Size(rect.getMaxX() * scale * j, rect.getMaxY() * scale * i));
-
 				pTempPhysicsBody = SpriteSetPhysicsBody(pBrick, scale, pBrick->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 				pTempPhysicsBody->setCategoryBitmask(0x02);
 				pTempPhysicsBody->setCollisionBitmask(0x03);
@@ -103,7 +82,27 @@ bool PhysicsLayer::init()
 		}
 	}
 
-	schedule(schedule_selector(PhysicsLayer::tick), 0.1f);// , 1.0f);
+	mpBogie = Bogie::create(mpSpriteFrameCache->getSpriteFrameByName("bogie"), BOGIE_TAG);
+	mpBogie->setPosition(Vec2(500, 100));
+	pTempPhysicsBody = SpriteSetPhysicsBody(mpBogie, scale, mpBogie->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	pTempPhysicsBody->setDynamic(false);
+	pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
+	this->addChild(mpBogie);
+
+	scale = 0.5f;
+	mpBead = Bead::create(mpSpriteFrameCache->getSpriteFrameByName("bead"), BEAD_TAG, brickTagCount);
+	mpBead->setPosition(Vec2(500, 132));
+	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, mpBead->getTextureRect(), circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
+	pTempPhysicsBody->setGravityEnable(false);
+	pTempPhysicsBody->setCategoryBitmask(0x02);
+	pTempPhysicsBody->setCollisionBitmask(0x01);
+	pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
+	//pTempPhysicsBody->setVelocity(Vec2(300, 600));
+	this->addChild(mpBead);
+
+	// 위 두 친구는 joint로 묶도록 하자.
+
+	schedule(schedule_selector(PhysicsLayer::tick));// , 1.0f);
 
 	log("width : %f, height : %f", mWinSize.width, mWinSize.height);
 	//log("%d, %d, %d", pBogie->getTag(), pBead->getTag(), pBrick->getTag());
@@ -113,8 +112,8 @@ bool PhysicsLayer::init()
 
 PhysicsBody* PhysicsLayer::SpriteSetPhysicsBody(Sprite* const pSprite, const float scale, const Rect& rect, const ePhysicsBodyType type, const PhysicsMaterial& material, const Vec2& offset) const
 {
-	assert(pSprite != nullptr, "Sprite is Not NULL");
-	assert(type != polygon, "an undefined type");
+	CCASSERT(pSprite != nullptr, "Sprite is Not NULL");
+	CCASSERT(type != polygon, "an undefined type");
 
 	PhysicsBody* pPhysicsBody = nullptr;
 
@@ -150,7 +149,6 @@ void PhysicsLayer::onEnter()
 	mpTouchListener->onTouchCancelled = CC_CALLBACK_2(PhysicsLayer::onTouchEnded, this);
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(mpTouchListener, this);
-
 }
 
 void PhysicsLayer::onExit()
@@ -165,7 +163,11 @@ void PhysicsLayer::tick(float deltaTime)
 	//log("%f", deltaTime);
 	//auto begin = std::chrono::high_resolution_clock::now();
 
-	mpBead->Processing(mBricks);
+	Sprite* item = mpBead->Processing(mBricks);
+	if (item != nullptr)
+	{
+		this->addChild(item);
+	}
 
 	//auto end = std::chrono::high_resolution_clock::now();
 	//auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() / 1000.0;
@@ -181,7 +183,7 @@ bool PhysicsLayer::onTouchBegan(Touch* touch, Event* event)
 	for (auto& shape : physicsShapeArray)
 	{
 		log("%d", shape->getBody()->getTag());
-		if ((shape->getBody()->getTag()) == BEAD_TAG)
+		if (shape->getBody()->getTag() == BEAD_TAG || shape->getBody()->getTag() == ITEM_TAG)
 		{
 			body = shape->getBody();
 			break;
@@ -243,9 +245,7 @@ void PhysicsLayer::onTouchEnded(Touch* touch, Event* event)
 void PhysicsLayer::A()
 {
 	Vec2 vec = Vec2(200, 300);
-	//auto* pItem = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("bead"));
-	Rect rect4 = Rect(0, 0, 64, 24);
-	auto* pItem = Sprite::create("hd/Icon.png", rect4);
+	auto* pItem = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("item"));
 	pItem->setTag(1);
 	pItem->setPosition(vec);
 

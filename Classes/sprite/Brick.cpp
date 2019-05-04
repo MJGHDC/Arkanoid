@@ -1,8 +1,9 @@
 #include "Brick.h"
+#include "sprite/properties/SpriteStatus.h"
 
-Brick* Brick::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
+Brick* Brick::create(SpriteFrame* pSpriteFrame, int32_t tagNumber, eItem item)
 {
-	Brick* pSprite = new Brick(tagNumber);
+	Brick* pSprite = new Brick(tagNumber, item);
 	if (pSprite && pSprite->initWithSpriteFrame(pSpriteFrame))
 	{
 		pSprite->autorelease();
@@ -14,8 +15,10 @@ Brick* Brick::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 	return nullptr;
 }
 
-Brick::Brick(int32_t tagNumber)
+Brick::Brick(int32_t tagNumber, eItem item)
 	: mTagNumber(tagNumber)
+	, mItemUse(item)
+	, mStatus(eBrickStatus::construct)
 {
 	this->setTag(tagNumber);
 }
@@ -28,4 +31,31 @@ void Brick::onEnter()
 void Brick::onExit()
 {
 	Sprite::onExit();
+}
+
+Sprite * Brick::GetItem() const
+{
+	if (mItemUse == eItem::none)
+	{
+		return nullptr;
+	}
+
+	Vec2 vec = Vec2(200, 300);
+	auto* pItem = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("item"));
+	pItem->setTag(ITEM_TAG);
+	pItem->setAnchorPoint(this->getAnchorPoint());
+	pItem->setPosition(this->getPosition() + Vec2(-10, 0));
+	pItem->setScale(0.4f);
+
+	PhysicsBody* pPhysicsBody = nullptr;
+
+	pPhysicsBody = PhysicsBody::createBox(pItem->getContentSize(), PhysicsMaterial(0.1f, 0.0f, 0.0f));
+
+	pPhysicsBody->setTag(pItem->getTag());
+	pPhysicsBody->setCategoryBitmask(0x02);
+	pPhysicsBody->setCollisionBitmask(0x01);
+	pPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
+	pItem->setPhysicsBody(pPhysicsBody);
+
+	return pItem;
 }
