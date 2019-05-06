@@ -33,7 +33,7 @@ ArkanoidScene* ArkanoidScene::createScene()
 	auto* scene = ArkanoidScene::createWithPhysics();
 	if (false == scene->init())
 	{
-		assert(false, "리소스 로딩 실패");
+		CCASSERT(false, "리소스 로딩 실패");
 		return nullptr;
 	}
 

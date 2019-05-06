@@ -25,8 +25,6 @@ public:
 
 	//CREATE_FUNC(PhysicsLayer);
 
-	PhysicsBody* SpriteSetPhysicsBody(Sprite* const pSprite, const float scale, const Rect& rect, const ePhysicsBodyType type = box, const PhysicsMaterial& material = PHYSICSBODY_MATERIAL_DEFAULT, const Vec2& offset = Vec2::ZERO) const;
-
 	void onEnter() override;
 	void onExit() override;
 	void tick(float deltaTime);
@@ -39,10 +37,6 @@ public:
 
 private:
 	const Scene* const mParentScene;
-
-	Size mWinSize;
-	Texture2D* mpTexture;
-	SpriteFrameCache* mpSpriteFrameCache;
 
 	Bogie* mpBogie;
 	Bead* mpBead;

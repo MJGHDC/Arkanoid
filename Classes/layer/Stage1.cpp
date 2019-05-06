@@ -3,6 +3,7 @@
 #include "sprite/Bogie.h"
 #include "sprite/Brick.h"
 #include "sprite/properties/SpriteStatus.h"
+#include "manager/SpriteCreateManager.h"
 
 Stage1::Stage1(const Scene* const scene)
 	: mParentScene(scene)
@@ -32,11 +33,7 @@ bool Stage1::init()
 	{
 		return false;
 	}
-
-	mWinSize = Director::getInstance()->getWinSize();
-	mpTexture = Director::getInstance()->getTextureCache()->addImage("blocks.png"); // 임시
-	mpSpriteFrameCache = SpriteFrameCache::getInstance();
-		
+	
 	int8_t brickPlacement[8][16] = {
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -52,89 +49,29 @@ bool Stage1::init()
 	constexpr int8_t lengthCount = sizeof(brickPlacement) / widthCount;
 	static_assert(widthCount == 8, "세로 벽돌은 8개이여야 함");
 	static_assert(lengthCount == 16, "가로 벽돌은 16개이여야 함");
+	
+	SpriteCreateManager spriteCreateManager;
 
-	PhysicsBody* pTempPhysicsBody = nullptr;
-
-	float scale = 1.0f;
-	Size brickPosition = mWinSize - Size(0, 60);
-	int32_t brickTagCount = 0;
-	mBricks.reserve(widthCount * lengthCount);
-	for (size_t i = 0; i < widthCount; ++i)
+	mBricks = spriteCreateManager.CreateBrick(brickPlacement, widthCount, lengthCount);
+	for (const auto& brick : mBricks)
 	{
-		for (size_t j = 0; j < lengthCount; ++j)
-		{
-			if (brickPlacement[i][j] == 1)
-			{
-				eItem itemArr[2] = { eItem::none, eItem::powerBall };
-				int32_t tagNumber = BRICK_TAG + brickTagCount++;
-				auto* pBrick = Brick::create(mpSpriteFrameCache->getSpriteFrameByName("brick"), tagNumber, itemArr[random() % 2]);
-				Rect rect = pBrick->getTextureRect();
-				pBrick->setAnchorPoint(Vec2(1, 1));
-				pBrick->setPosition(brickPosition - Size(rect.getMaxX() * scale * j, rect.getMaxY() * scale * i));
-				pTempPhysicsBody = SpriteSetPhysicsBody(pBrick, scale, pBrick->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
-				pTempPhysicsBody->setCategoryBitmask(0x01);
-				pTempPhysicsBody->setCollisionBitmask(0x02);
-				pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
-				pTempPhysicsBody->setDynamic(false);
-				mBricks.pushBack(pBrick);
-				this->addChild(pBrick);
-			}
-		}
+		this->addChild(brick);
 	}
+	int32_t brickTagCount = mBricks.size();
 
-	mpBogie = Bogie::create(mpSpriteFrameCache->getSpriteFrameByName("bogie"), BOGIE_TAG);
-	mpBogie->setPosition(Vec2(500, 100));
-	pTempPhysicsBody = SpriteSetPhysicsBody(mpBogie, scale, mpBogie->getTextureRect(), box, PhysicsMaterial(0.1f, 1.0f, 0.0f));
-	pTempPhysicsBody->setDynamic(false);
-	pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
+	mpBogie = spriteCreateManager.CreateBogie();
 	this->addChild(mpBogie);
 
-	scale = 0.5f;
-	mpBead = Bead::create(mpSpriteFrameCache->getSpriteFrameByName("bead"), BEAD_TAG, brickTagCount);
-	mpBead->setPosition(Vec2(500, 132));
-	pTempPhysicsBody = SpriteSetPhysicsBody(mpBead, scale, mpBead->getTextureRect(), circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
-	pTempPhysicsBody->setGravityEnable(false);
-	pTempPhysicsBody->setCategoryBitmask(0x03);
-	pTempPhysicsBody->setCollisionBitmask(0x03);
-	pTempPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
-	pTempPhysicsBody->setVelocity(Vec2(300, 600));
+	mpBead = spriteCreateManager.CreateBead(brickTagCount);
 	this->addChild(mpBead);
+
+	//mpBead->getPhysicsBody()->setVelocity(Vec2(300, 600));
 
 	// 위 두 친구는 joint로 묶도록 하자.
 
 	schedule(schedule_selector(Stage1::tick));// , 1.0f);
-
-	log("width : %f, height : %f", mWinSize.width, mWinSize.height);
-	//log("%d, %d, %d", pBogie->getTag(), pBead->getTag(), pBrick->getTag());
-
+	
 	return true;
-}
-
-PhysicsBody* Stage1::SpriteSetPhysicsBody(Sprite* const pSprite, const float scale, const Rect& rect, const ePhysicsBodyType type, const PhysicsMaterial& material, const Vec2& offset) const
-{
-	CCASSERT(pSprite != nullptr, "Sprite is Not NULL");
-	CCASSERT(type != polygon, "an undefined type");
-
-	PhysicsBody* pPhysicsBody = nullptr;
-
-	if (type == box)
-	{
-		pPhysicsBody = PhysicsBody::createBox(Size(rect.getMaxX() * scale, rect.getMaxY() * scale), material, offset);
-	}
-	else if (type == circle)
-	{
-		pPhysicsBody = PhysicsBody::createCircle(rect.getMaxX() * scale, material, offset);
-	}
-	else
-	{
-		return nullptr;
-	}
-
-	pPhysicsBody->setTag(pSprite->getTag());
-	pSprite->setScale(scale);
-	pSprite->setPhysicsBody(pPhysicsBody);
-
-	return pPhysicsBody;
 }
 
 void Stage1::onEnter()

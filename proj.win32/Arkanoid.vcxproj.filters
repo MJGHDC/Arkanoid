@@ -19,6 +19,9 @@
     <Filter Include="src\sprite\properties">
       <UniqueIdentifier>{19cea9b1-60bc-4819-a18c-42c957cd68bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\manager">
+      <UniqueIdentifier>{cf1ccaf9-b34f-49dd-9cb0-f91cc551bbfd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -44,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\layer\Stage1.cpp">
       <Filter>src\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\manager\SpriteCreateManager.cpp">
+      <Filter>src\manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\layer\Stage1.h">
       <Filter>src\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\manager\SpriteCreateManager.h">
+      <Filter>src\manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
