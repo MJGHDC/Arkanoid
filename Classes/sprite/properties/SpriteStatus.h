@@ -15,7 +15,7 @@ enum class eBrickStatus
 
 enum class eItem
 {
-	none,
-	powerBall,
-	multiBall
+	none = 1000,
+	powerBall = 1001,
+	multiBall = 1002
 };

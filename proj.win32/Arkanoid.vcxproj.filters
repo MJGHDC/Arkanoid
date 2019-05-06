@@ -39,11 +39,11 @@
     <ClCompile Include="..\Classes\sprite\Bogie.cpp">
       <Filter>src\sprite</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\layer\PhysicsLayer.cpp">
-      <Filter>src\layer</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\ArkanoidScene.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\layer\Stage1.cpp">
+      <Filter>src\layer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -65,14 +65,14 @@
     <ClInclude Include="..\Classes\sprite\Bogie.h">
       <Filter>src\sprite</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\layer\PhysicsLayer.h">
-      <Filter>src\layer</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\ArkanoidScene.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\sprite\properties\SpriteStatus.h">
       <Filter>src\sprite\properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\layer\Stage1.h">
+      <Filter>src\layer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

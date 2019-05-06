@@ -8,7 +8,7 @@ class Bogie;
 class Bead;
 class Brick;
 
-class PhysicsLayer : public Layer
+class Stage1 : public Layer
 {
 	enum ePhysicsBodyType
 	{
@@ -18,8 +18,8 @@ class PhysicsLayer : public Layer
 	};
 
 public:
-	PhysicsLayer(const Scene* const scene);
-	static PhysicsLayer* create(const Scene* const scene);
+	Stage1(const Scene* const scene);
+	static Stage1* create(const Scene* const scene);
 
 	virtual bool init() override;
 

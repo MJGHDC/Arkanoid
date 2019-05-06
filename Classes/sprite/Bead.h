@@ -26,6 +26,11 @@ public:
 	bool onContactSeparate(PhysicsContact& contact);
 
 	Sprite* Processing(Vector<Brick*> bricks);
+	void SetPowerBall();
+	float Item(float deltaTime);
+
+private:
+	void statusReset();
 
 private:
 	enum
@@ -38,6 +43,7 @@ private:
 	int32_t mStageBrickCount;
 	bool mbBrickCheckList[maxBrickCount];
 	eBeadStatus mStatus;
+	float mItemTime;
 
 	EventListenerPhysicsContact* mpContactListener;
 };

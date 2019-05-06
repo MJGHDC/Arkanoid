@@ -33,7 +33,7 @@ void Brick::onExit()
 	Sprite::onExit();
 }
 
-Sprite * Brick::GetItem() const
+Sprite* Brick::GetItem() const
 {
 	if (mItemUse == eItem::none)
 	{
@@ -43,17 +43,29 @@ Sprite * Brick::GetItem() const
 	Vec2 vec = Vec2(200, 300);
 	auto* pItem = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("item"));
 	pItem->setTag(ITEM_TAG);
+	//pItem->setTag(static_cast<int32_t>(mItemUse));
 	pItem->setAnchorPoint(this->getAnchorPoint());
 	pItem->setPosition(this->getPosition() + Vec2(-10, 0));
 	pItem->setScale(0.4f);
+
+	if (mItemUse == eItem::powerBall)
+	{
+		pItem->setName("power");
+	}
+	else if (mItemUse == eItem::multiBall)
+	{
+		pItem->setName("multi");
+	}
 
 	PhysicsBody* pPhysicsBody = nullptr;
 
 	pPhysicsBody = PhysicsBody::createBox(pItem->getContentSize(), PhysicsMaterial(0.1f, 0.0f, 0.0f));
 
 	pPhysicsBody->setTag(pItem->getTag());
-	pPhysicsBody->setCategoryBitmask(0x02);
-	pPhysicsBody->setCollisionBitmask(0x01);
+	//pPhysicsBody->setCategoryBitmask(0x02);
+	//pPhysicsBody->setCollisionBitmask(0x01);
+	pPhysicsBody->setCategoryBitmask(0x01);
+	pPhysicsBody->setCollisionBitmask(0x02);
 	pPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
 	pItem->setPhysicsBody(pPhysicsBody);
 

@@ -24,7 +24,7 @@
 
 #include "ArkanoidScene.h"
 #include "SimpleAudioEngine.h"
-#include "layer/PhysicsLayer.h"
+#include "layer/Stage1.h"
 
 USING_NS_CC;
 
@@ -45,7 +45,7 @@ ArkanoidScene* ArkanoidScene::createScene()
 	// scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
 	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 
-	auto* layer = PhysicsLayer::create(scene);
+	auto* layer = Stage1::create(scene);
 	layer->setTag(10000);
 	scene->addChild(layer);
 

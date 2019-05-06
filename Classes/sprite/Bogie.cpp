@@ -1,5 +1,6 @@
 #include "Bogie.h"
 #include "Brick.h"
+#include "sprite/properties/SpriteStatus.h"
 
 Bogie* Bogie::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 {
@@ -30,7 +31,7 @@ void Bogie::onEnter()
 	mpTouchListener->setSwallowTouches(true);
 	mpTouchListener->onTouchBegan = CC_CALLBACK_2(Bogie::onTouchBegan, this);
 	mpTouchListener->onTouchMoved = CC_CALLBACK_2(Bogie::onTouchMoved, this);
-	
+
 	mpContactListener = EventListenerPhysicsContact::create();
 	mpContactListener->onContactBegin = CC_CALLBACK_1(Bogie::onContactSeparate, this);
 
@@ -48,25 +49,23 @@ void Bogie::onExit()
 	Sprite::onExit();
 }
 
-bool Bogie::onContactSeparate(PhysicsContact & contact)
+bool Bogie::onContactSeparate(PhysicsContact& contact)
 {
 	auto* nodeA = contact.getShapeA()->getBody()->getNode();
-	auto* nodeB = contact.getShapeB()->getBody()->getNode(); 
+	auto* nodeB = contact.getShapeB()->getBody()->getNode();
 
-	log("%d, %d", nodeA->getTag(), nodeB->getTag());
 	if (nodeA && nodeB)
 	{
-		if (nodeA->getTag() == ITEM_TAG && nodeB->getTag() == BOGIE_TAG)
+		if (nodeA == this && nodeB->getTag() == ITEM_TAG)
 		{
-			nodeA->removeFromParentAndCleanup(true);
+			setItemQueueAndItemClear(nodeA, nodeB);
 		}
-		else if (nodeA->getTag() == BOGIE_TAG && nodeB->getTag() == ITEM_TAG)
+		else if (nodeB == this && nodeA->getTag() == ITEM_TAG)
 		{
-			nodeB->removeFromParentAndCleanup(true);
+			setItemQueueAndItemClear(nodeB, nodeA);
 		}
 		else if (nodeA->getTag() == -1 && nodeB->getTag() == ITEM_TAG)
 		{
-			log("%f", nodeB->getPositionY());
 			if (nodeB->getPositionY() < 120)
 			{
 				nodeB->removeFromParentAndCleanup(true);
@@ -77,7 +76,7 @@ bool Bogie::onContactSeparate(PhysicsContact & contact)
 	return true;
 }
 
-bool Bogie::onTouchBegan(Touch * touch, Event * event)
+bool Bogie::onTouchBegan(Touch* touch, Event* event)
 {
 	Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 	Size s = this->getContentSize();
@@ -93,7 +92,7 @@ bool Bogie::onTouchBegan(Touch * touch, Event * event)
 	return false;
 }
 
-void Bogie::onTouchMoved(Touch * touch, Event * event)
+void Bogie::onTouchMoved(Touch* touch, Event* event)
 {
 	Vec2 move = Vec2(touch->getLocation().x, this->getPosition().y);
 	if (move.x < 64)
@@ -105,4 +104,24 @@ void Bogie::onTouchMoved(Touch * touch, Event * event)
 		move.x = 960;
 	}
 	this->setPosition(move);
+}
+
+std::queue<eItem>& Bogie::GetItemQueue()
+{
+	return mItemQueue;
+}
+
+void Bogie::setItemQueueAndItemClear(Node* bogie, Node* item)
+{
+	//mItemQueue.push(static_cast<eItem>(item->getTag()));
+	if (item->getName() == "power")
+	{
+		mItemQueue.push(eItem::powerBall);
+	}
+	else if (item->getName() == "multi")
+	{
+		mItemQueue.push(eItem::multiBall);
+	}
+
+	item->removeFromParentAndCleanup(true);
 }
