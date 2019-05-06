@@ -10,7 +10,7 @@ USING_NS_CC;
 enum class eBrickStatus;
 enum class eItem;
 
-class Brick : public Sprite
+class Brick final : public Sprite
 {
 public:
 	static Brick* create(SpriteFrame* pSpriteFrame, int32_t tagNumber, eItem item);

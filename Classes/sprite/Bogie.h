@@ -7,7 +7,7 @@ USING_NS_CC;
 
 enum class eItem;
 
-class Bogie : public Sprite
+class Bogie final : public Sprite
 {
 public:
 	static Bogie* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);

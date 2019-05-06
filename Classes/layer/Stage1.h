@@ -8,7 +8,7 @@ class Bogie;
 class Bead;
 class Brick;
 
-class Stage1 : public Layer
+class Stage1 final : public Layer
 {
 	enum ePhysicsBodyType
 	{

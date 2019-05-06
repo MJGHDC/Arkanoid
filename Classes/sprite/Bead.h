@@ -9,7 +9,7 @@ USING_NS_CC;
 enum class eBeadStatus;
 class Brick;
 
-class Bead : public Sprite
+class Bead final : public Sprite
 {
 public:
 	static Bead* create(SpriteFrame* pSpriteFrame);
