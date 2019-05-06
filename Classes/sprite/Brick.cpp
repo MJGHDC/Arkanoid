@@ -62,10 +62,8 @@ Sprite* Brick::GetItem() const
 	pPhysicsBody = PhysicsBody::createBox(pItem->getContentSize(), PhysicsMaterial(0.1f, 0.0f, 0.0f));
 
 	pPhysicsBody->setTag(pItem->getTag());
-	//pPhysicsBody->setCategoryBitmask(0x02);
-	//pPhysicsBody->setCollisionBitmask(0x01);
 	pPhysicsBody->setCategoryBitmask(0x01);
-	pPhysicsBody->setCollisionBitmask(0x02);
+	pPhysicsBody->setCollisionBitmask(0x00);
 	pPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
 	pItem->setPhysicsBody(pPhysicsBody);
 
