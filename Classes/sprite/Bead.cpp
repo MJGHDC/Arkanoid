@@ -127,9 +127,9 @@ Sprite* Bead::Processing(Vector<Brick*> bricks)
 
 void Bead::SetPowerBall()
 {
-	//int32_t collisionBitmask = this->getPhysicsBody()->getCollisionBitmask();
 	if (mStatus == eBeadStatus::default)
 	{
+		mStatus = eBeadStatus::power;
 		this->getPhysicsBody()->setCollisionBitmask(0x02);
 		mItemTime = 5.f;
 	}
@@ -137,8 +137,6 @@ void Bead::SetPowerBall()
 	{
 		mItemTime = 5.f;
 	}
-
-	//this->runAction(Sequence::create(DelayTime::create(5.0f), nullptr));
 }
 
 float Bead::Item(float deltaTime)
