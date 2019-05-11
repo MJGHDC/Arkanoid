@@ -2,7 +2,7 @@
 #include "Brick.h"
 #include "sprite/properties/SpriteStatus.h"
 
-int32_t Bead::msDestroyedBrickCount = 0;
+int32_t Bead::s_mDestroyedBrickCount = 0;
 
 Bead* Bead::create(SpriteFrame* pSpriteFrame)
 {
@@ -40,7 +40,7 @@ Bead::Bead(int32_t tagNumber)
 	, mSpeed(600)
 {
 	this->setTag(tagNumber);
-	log("msDestroyedBrickCount : %d", msDestroyedBrickCount);
+	log("msDestroyedBrickCount : %d", s_mDestroyedBrickCount);
 }
 
 void Bead::onEnter()
@@ -111,9 +111,9 @@ Sprite* Bead::Processing(Vector<Brick*> bricks)
 			mbBrickCheckList[i] = false;
 			auto* pBrick = bricks.at(i);
 			//log("destroyBrickTag : %d", pBrick->getTag());
-			msDestroyedBrickCount++;
-			log("msDestroyedBrickCount : %d", msDestroyedBrickCount);
-			if (msDestroyedBrickCount >= bricks.size())
+			s_mDestroyedBrickCount++;
+			log("msDestroyedBrickCount : %d", s_mDestroyedBrickCount);
+			if (s_mDestroyedBrickCount >= bricks.size())
 			{
 				log("game clear");
 			}
