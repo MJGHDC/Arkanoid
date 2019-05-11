@@ -21,16 +21,24 @@ Bogie* SpriteCreateManager::CreateBogie()
 	return pBogie;
 }
 
-Bead* SpriteCreateManager::CreateBead(int32_t brickTagCount)
+Bead* SpriteCreateManager::CreateBead()
 {
 	float scale = 0.5f;
-	auto* pBead = Bead::create(mpCache->getSpriteFrameByName("bead"), BEAD_TAG, brickTagCount);
+	auto* pBead = Bead::create(mpCache->getSpriteFrameByName("bead"), BEAD_TAG);
 	pBead->setPosition(Vec2(500, 132));
 	auto* pPhysicsBody = SpriteSetPhysicsBody(pBead, scale, pBead->getTextureRect(), circle, PhysicsMaterial(0.1f, 1.0f, 0.0f));
 	pPhysicsBody->setGravityEnable(false);
 	pPhysicsBody->setCategoryBitmask(0x03);
 	pPhysicsBody->setCollisionBitmask(0x03);
 	pPhysicsBody->setContactTestBitmask(0xFFFFFFFF);
+	return pBead;
+}
+
+Bead* SpriteCreateManager::CreateBead(Vec2 position)
+{
+	auto* pBead = CreateBead();
+	pBead->setPosition(position);
+
 	return pBead;
 }
 
@@ -48,9 +56,9 @@ Vector<Brick*> SpriteCreateManager::CreateBrick(const int8_t brickPlacement[8][1
 		{
 			if (brickPlacement[i][j] == 1)
 			{
-				eItem itemArr[2] = { eItem::none, eItem::powerBall };
+				eItem itemArr[3] = { eItem::none, eItem::powerBall, eItem::multiBall };
 				int32_t tagNumber = BRICK_TAG + brickTagCount++;
-				auto* pBrick = Brick::create(mpCache->getSpriteFrameByName("brick"), tagNumber, itemArr[random() % 2]);
+				auto* pBrick = Brick::create(mpCache->getSpriteFrameByName("brick"), tagNumber, itemArr[random() % 3]);
 				Rect rect = pBrick->getTextureRect();
 				pBrick->setAnchorPoint(Vec2(1, 1));
 				pBrick->setPosition(brickPosition - Size(rect.getMaxX() * scale * j, rect.getMaxY() * scale * i));

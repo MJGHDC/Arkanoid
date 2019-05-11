@@ -11,12 +11,14 @@ class Brick;
 
 class Bead final : public Sprite
 {
+	static int32_t s_mDestroyedBrickCount;
+
 public:
 	static Bead* create(SpriteFrame* pSpriteFrame);
-	static Bead* create(SpriteFrame* pSpriteFrame, int32_t tagNumber, int32_t stageBrickCount);
+	static Bead* create(SpriteFrame* pSpriteFrame, int32_t tagNumber);
 
 	Bead() = default;
-	Bead(int32_t tagNumber, int32_t stageBrickCount);
+	Bead(int32_t tagNumber);
 
 	~Bead() = default;
 
@@ -39,11 +41,10 @@ private:
 	};
 
 	int32_t mTagNumber;
-	int32_t mDestroyedBrickCount;
-	int32_t mStageBrickCount;
 	bool mbBrickCheckList[maxBrickCount];
 	eBeadStatus mStatus;
 	float mItemTime;
+	float mSpeed;
 
 	EventListenerPhysicsContact* mpContactListener;
 };

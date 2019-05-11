@@ -57,15 +57,20 @@ bool Stage1::init()
 	{
 		this->addChild(brick);
 	}
-	int32_t brickTagCount = mBricks.size();
 
 	mpBogie = spriteCreateManager.CreateBogie();
 	this->addChild(mpBogie);
 
-	mpBead = spriteCreateManager.CreateBead(brickTagCount);
+	mpBead = spriteCreateManager.CreateBead();
 	this->addChild(mpBead);
 
-	//mpBead->getPhysicsBody()->setVelocity(Vec2(300, 600));
+	mBeads.reserve(10);
+	mBeads.pushBack(mpBead);
+
+	float randomX = (random() % 200) / 100.f - 1.f;
+	Vec2 vec2 = Vec2(randomX, 1);
+	Vec2 normal = vec2.getNormalized();
+	mpBead->getPhysicsBody()->setVelocity(normal* 600);
 
 	// 위 두 친구는 joint로 묶도록 하자.
 
@@ -120,7 +125,15 @@ void Stage1::tick(float deltaTime)
 		}
 		else if (eItem::multiBall == item)
 		{
+			SpriteCreateManager spriteCreateManager;
+			auto* pBead = spriteCreateManager.CreateBead(mpBogie->getPosition());
+			mBeads.pushBack(pBead);
+			this->addChild(pBead);
 
+			float randomX = (random() % 200) / 100.f - 1.f;
+			Vec2 vec2 = Vec2(randomX, 1);
+			Vec2 normal = vec2.getNormalized();
+			pBead->getPhysicsBody()->setVelocity(normal * 600);
 		}
 	}
 	//auto end = std::chrono::high_resolution_clock::now();

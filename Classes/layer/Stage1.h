@@ -40,6 +40,7 @@ private:
 
 	Bogie* mpBogie;
 	Bead* mpBead;
+	Vector<Bead*> mBeads;
 	Vector<Brick*> mBricks;
 	int32_t mDestroyedBrickCount;
 

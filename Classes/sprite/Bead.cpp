@@ -2,9 +2,11 @@
 #include "Brick.h"
 #include "sprite/properties/SpriteStatus.h"
 
+int32_t Bead::msDestroyedBrickCount = 0;
+
 Bead* Bead::create(SpriteFrame* pSpriteFrame)
 {
-	Bead* pSprite = new Bead(BEAD_TAG, 128);
+	Bead* pSprite = new Bead(BEAD_TAG);
 	if (pSprite && pSprite->initWithSpriteFrame(pSpriteFrame))
 	{
 		pSprite->autorelease();
@@ -16,9 +18,9 @@ Bead* Bead::create(SpriteFrame* pSpriteFrame)
 	return nullptr;
 }
 
-Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber, int32_t stageBrickCount)
+Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber)
 {
-	Bead* pSprite = new Bead(tagNumber, stageBrickCount);
+	Bead* pSprite = new Bead(tagNumber);
 	if (pSprite && pSprite->initWithSpriteFrame(pSpriteFrame))
 	{
 		pSprite->autorelease();
@@ -30,15 +32,15 @@ Bead* Bead::create(SpriteFrame* pSpriteFrame, int32_t tagNumber, int32_t stageBr
 	return nullptr;
 }
 
-Bead::Bead(int32_t tagNumber, int32_t stageBrickCount)
+Bead::Bead(int32_t tagNumber)
 	: mTagNumber(tagNumber)
-	, mDestroyedBrickCount(0)
-	, mStageBrickCount(stageBrickCount)
 	, mbBrickCheckList{false}
 	, mStatus(eBeadStatus::default)
 	, mItemTime(0.0f)
+	, mSpeed(600)
 {
 	this->setTag(tagNumber);
+	log("msDestroyedBrickCount : %d", msDestroyedBrickCount);
 }
 
 void Bead::onEnter()
@@ -64,22 +66,34 @@ bool Bead::onContactSeparate(PhysicsContact& contact)
 	auto* nodeA = contact.getShapeA()->getBody()->getNode();
 	auto* nodeB = contact.getShapeB()->getBody()->getNode();
 
-	if (nodeA && nodeB && nodeA->getTag() == BEAD_TAG)
+
+	if (nodeA && nodeB)
 	{
+		if (nodeA->getTag() == BEAD_TAG)
+		{
+			PhysicsBody* pPhysicsBodyA = nodeA->getPhysicsBody();
+			pPhysicsBodyA->setVelocity(pPhysicsBodyA->getVelocity().getNormalized() * mSpeed);
+		}
+		if (nodeB->getTag() == BEAD_TAG)
+		{
+			PhysicsBody* pPhysicsBodyB = nodeB->getPhysicsBody();
+			pPhysicsBodyB->setVelocity(pPhysicsBodyB->getVelocity().getNormalized() * mSpeed);
+		}
+
 		if (nodeB->getTag() == -1)
 		{
 			if (nodeA->getPositionY() < 80)
 			{
-				log("The End");
+				nodeA->removeFromParentAndCleanup(true);
 			}
 		}
-		else
+		else if (nodeA->getTag() == BEAD_TAG)
 		{
 			if (nodeB->getTag() >= BRICK_TAG)
 			{
 				mbBrickCheckList[nodeB->getTag() - BRICK_TAG] = true;
-				log("%d", nodeB->getPhysicsBody()->getCollisionBitmask());
-				log("%d", nodeA->getPhysicsBody()->getCollisionBitmask());
+				//log("%d", nodeB->getPhysicsBody()->getCollisionBitmask());
+				//log("%d", nodeA->getPhysicsBody()->getCollisionBitmask());
 				nodeB->removeFromParentAndCleanup(true);
 			}
 		}
@@ -90,16 +104,16 @@ bool Bead::onContactSeparate(PhysicsContact& contact)
 
 Sprite* Bead::Processing(Vector<Brick*> bricks)
 {
-	for (int32_t i = 0; i < mStageBrickCount; ++i)
+	for (int32_t i = 0; i < bricks.size(); ++i)
 	{
 		if (mbBrickCheckList[i] == true)
 		{
 			mbBrickCheckList[i] = false;
 			auto* pBrick = bricks.at(i);
-			log("destroyBrickTag : %d", pBrick->getTag());
-			mDestroyedBrickCount++;
-			
-			if (mDestroyedBrickCount == mStageBrickCount)
+			//log("destroyBrickTag : %d", pBrick->getTag());
+			msDestroyedBrickCount++;
+			log("msDestroyedBrickCount : %d", msDestroyedBrickCount);
+			if (msDestroyedBrickCount >= bricks.size())
 			{
 				log("game clear");
 			}
@@ -117,11 +131,11 @@ void Bead::SetPowerBall()
 	if (mStatus == eBeadStatus::default)
 	{
 		this->getPhysicsBody()->setCollisionBitmask(0x02);
-		mItemTime = 3.f;
+		mItemTime = 5.f;
 	}
 	else if(mStatus == eBeadStatus::power)
 	{
-		mItemTime = 3.f;
+		mItemTime = 5.f;
 	}
 
 	//this->runAction(Sequence::create(DelayTime::create(5.0f), nullptr));

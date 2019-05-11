@@ -43,7 +43,7 @@ ArkanoidScene* ArkanoidScene::createScene()
 
 	// optional: set debug draw
 	// scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
-	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 
 	auto* layer = Stage1::create(scene);
 	layer->setTag(10000);
